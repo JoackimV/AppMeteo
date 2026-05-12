@@ -96,3 +96,20 @@ header {
   background-clip: text !important;
   text-shadow: 0 3px 3px rgba(255,255,255,0.5) !important;
 }
+
+#cardMap {
+  border: 6px solid #f0f1f5 !important;
+  border-radius: 8px;
+}
+
+.leaflet-control-zoom {
+  border: 0 !important;
+}
+
+#cardMap a {
+  border-radius: 6px !important;
+}
+
+.leaflet-control-zoom-in {
+  margin-bottom: 4px;
+}
