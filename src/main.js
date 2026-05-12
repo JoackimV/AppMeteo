@@ -42,7 +42,7 @@ document.querySelector('#app').innerHTML = `
             <div class="row" id="precip"></div>
         </div>
     </div>
-    <div class="card row-start-2 row-span-2">
+    <div class="card row-start-2 row-span-2" id="cardMap">
         <div class="card-body p-0">
             <div id="map" style="width: 100%; height: 100%;"></div>
         </div>
@@ -60,11 +60,12 @@ document.querySelector('#app').innerHTML = `
 `
 
 // Initialiser la carte une seule fois
-const map = L.map('map').setView([48.8566, 2.3522], 5); // Paris par défaut
+const map = L.map('map', { zoomControl: false }).setView([48.8566, 2.3522], 5); // Paris par défaut
+
+L.control.zoom({ position: 'topright' }).addTo(map);
 
 // Fond de carte (gratuit, sans clé API)
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
 
 var myIcon = L.icon({
     iconUrl: 'geo-alt-fill.svg',
@@ -113,6 +114,9 @@ function renderWeather(weatherData) {
         let date = new Date(hourly.time[i]);
         let timeLabel = (i === nowIndex - 1) ? "Maint." : date.getHours() + "h";
         let windDir = hourly.wind_direction_10m[i];
+
+        console.log(timeLabel);
+        console.log(hourly.temperature_2m[i]);
 
         forecast.innerHTML = `
         <div><strong>${timeLabel}</strong></div>
