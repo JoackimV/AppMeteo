@@ -6,6 +6,8 @@ import {getWeatherData} from "./weatherData.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { getIconByWeatherCode } from "./weatherIcon";
 import "./cityLocation.js";
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 document.querySelector('#app').innerHTML = `
 <main class="container-fluid app-layout">
@@ -41,6 +43,9 @@ document.querySelector('#app').innerHTML = `
         </div>
     </div>
     <div class="card row-start-2 row-span-2">
+        <div class="card-body p-0">
+            <div id="map" style="width: 100%; height: 100%;"></div>
+        </div>
     </div>
     <!-- Prévisions par heure -->
     <div class="card row-start-3 col-start-2 h-fit-content">
@@ -53,6 +58,22 @@ document.querySelector('#app').innerHTML = `
     </div>
 </main>
 `
+
+// Initialiser la carte une seule fois
+const map = L.map('map').setView([48.8566, 2.3522], 5); // Paris par défaut
+
+// Fond de carte (gratuit, sans clé API)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+}).addTo(map);
+
+var myIcon = L.icon({
+    iconUrl: 'geo-alt-fill.svg',
+    iconSize: [30, 60],
+    iconAnchor: [15, 45],
+    popupAnchor: [0, -20],
+});
+// Marqueur de la ville actuelle
+let marker = L.marker([48.8566, 2.3522], {icon: myIcon}).addTo(map);
 
 let cityInput = document.querySelector("#cityInput");
 
@@ -124,7 +145,27 @@ function renderWeather(weatherData) {
     `;
         document.querySelector("#dailyForecast").appendChild(forecast);
     }
+
+    const { lat, lng } = { lat: weatherData.current.latitude, lng: weatherData.current.longitude }
+
+    marker.bindPopup(weatherData.city.name).openPopup();
+    map.setView({ lat, lng }, 5);        // recentrer
+    marker.setLatLng({ lat, lng });       // déplacer le marqueur
 }
+
+map.on('click', async (e) => {
+    const { lat, lng } = e.latlng;
+
+    // Reverse geocoding avec l'API open-meteo (ou Nominatim gratuit)
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+    const data = await res.json();
+    const cityName = data.address.city || data.address.town || data.address.village;
+
+    if (cityName) {
+        cityInput.value = cityName;
+        loadWeather();
+    }
+});
 
 cityInput.addEventListener("input", loadWeather);
 loadWeather(); // appel initial
