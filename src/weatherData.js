@@ -55,6 +55,8 @@ export async function getWeatherData(city) {
             wind_speed_10m: currentValue(current, 3, true),
             wind_direction_10m: currentValue(current, 4, true),
             apparent_temperature: currentValue(current, 5, true),
+            latitude: latitude,
+            longitude: longitude,
         } : null,
 
         hourly: hourly ? (() => {

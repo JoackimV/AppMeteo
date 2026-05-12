@@ -1,4 +1,4 @@
-* {
+*:not(#map *, .windDirec, [class*="leaflet"]) {
   background: #f0f1f5 !important;
   color: #33394e !important;
 }
