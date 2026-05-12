@@ -57,8 +57,8 @@ const daily = weatherData.daily;
 const now = new Date();
 
 if (current) {
-    document.querySelector("#temp").innerHTML = `<i class="bi bi-water iconCurrent"></i> ${current.temperature_2m}°C`;
-    document.querySelector("#precip").innerHTML = `<i class="bi bi-thermometer-half iconCurrent"></i> ${current.precipitation}mm`;
+    document.querySelector("#temp").innerHTML = `<i class="bi bi-thermometer-half iconCurrent"></i>${current.temperature_2m}°C`;
+    document.querySelector("#precip").innerHTML = ` <i class="bi bi-water iconCurrent"></i> ${current.precipitation}mm`;
     document.querySelector("#windSpeed").innerHTML = `<i class="bi bi-wind iconCurrent"></i> ${current.wind_speed_10m}km/h`;
     document.querySelector("#windDirec").style.transform = `rotate(${current.wind_direction_10m}deg)`;
 }
