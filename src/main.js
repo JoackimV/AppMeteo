@@ -2,31 +2,34 @@ import './style.css'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './weatherData.js'
-import {weatherData} from "./weatherData.js";
+import {getWeatherData} from "./weatherData.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { getIconByWeatherCode } from "./weatherIcon";
+import "./cityLocation.js";
 
 document.querySelector('#app').innerHTML = `
-<main class="container-fluid">
-    <h1 class="text-center">App Meteo</h1>
-    <div class="row">
-    <div class="col-4">
-        <div class="card">
+<main class="container-fluid app-layout">
+    <header class="d-flex flex-column align-items-center justify-content-center">
+        <h1>App Meteo</h1>
+        <div class="input-group w-25">
+            <input type="text" class="form-control" placeholder="Entrez une ville" aria-label="City name" id="cityInput">
+            <i class="bi bi-search input-group-text"></i>
+        </div>
+    </header>
+    <div class="card row-start-2 row-span-2">
         <div class="card-header">
-        <h5>Prévisions sur 4 jours</h5>
-</div>
-<div class="card-body">
-        <table class="table">
-            <tbody id="dailyForecast">
-            </tbody>
-</table>
-</div>
-</div>
+            <h5>Prévisions sur 4 jours</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tbody id="dailyForecast"></tbody>
+            </table>
+        </div>
     </div>
-    <div class="col-4">
-    <div class="card">
+    <div class="card row-start-2">
         <div class="card-header d-flex flex-column align-items-center">
-            <h3>Paris</h3>
+            <h3 id="cityName"></h3>
+            <h4 class="fw-normal" id="countryName"></h4>
             <div class="row" id="temp"></div>
             <div class="row" id="precip"></div>
             <div class="row" id="windSpeed"></div>
@@ -43,39 +46,55 @@ document.querySelector('#app').innerHTML = `
             </div>
         </div>
     </div>
-    <div class="col-4">
+    <div class="card row-start-2 row-span-2">
+        
     </div>
-    </div>
+    <div class="card row-start-3 col-start-2">
+    
     </div>
 </main>
 `
 
-const current = weatherData.current;
-const hourly = weatherData.hourly;
-const daily = weatherData.daily;
+let cityInput = document.querySelector("#cityInput");
 
-const now = new Date();
-
-if (current) {
-    document.querySelector("#temp").innerHTML = `<i class="bi bi-thermometer-half iconCurrent"></i>${current.temperature_2m}°C`;
-    document.querySelector("#precip").innerHTML = ` <i class="bi bi-water iconCurrent"></i> ${current.precipitation}mm`;
-    document.querySelector("#windSpeed").innerHTML = `<i class="bi bi-wind iconCurrent"></i> ${current.wind_speed_10m}km/h`;
-    document.querySelector("#windDirec").style.transform = `rotate(${current.wind_direction_10m}deg)`;
+async function loadWeather() {
+    let city = cityInput.value.trim() === "" ? "Paris" : cityInput.value.trim();
+    let weatherData = await getWeatherData(city);
+    if (!weatherData) return;
+    renderWeather(weatherData);
 }
 
-const nowIndex = hourly.time.findIndex(
-    (time) => time.getTime() >= now.getTime()
-);
+function renderWeather(weatherData) {
+    let current = weatherData.current;
+    let hourly = weatherData.hourly;
+    let daily = weatherData.daily;
+    let now = new Date();
 
-for (let i = nowIndex - 1; i < (nowIndex + 24); i++) {
-    const forecast = document.createElement("div");
-    forecast.classList.add("col", "d-flex", "flex-column", "align-items-center");
+    // Vider les anciens résultats
+    document.querySelector("#hourlyForecast").innerHTML = "";
+    document.querySelector("#dailyForecast").innerHTML = "";
 
-    const date = new Date(hourly.time[i]);
-    const timeLabel = (i === nowIndex - 1) ? "Maint." : date.getHours() + "h";
-    const windDir = hourly.wind_direction_10m[i];
+    document.querySelector("#cityName").textContent = weatherData.city.name;
+    document.querySelector("#countryName").textContent = weatherData.city.country;
 
-    forecast.innerHTML = `
+    if (current) {
+        document.querySelector("#temp").innerHTML = `<i class="bi bi-thermometer-half iconCurrent"></i>${current.temperature_2m}°C`;
+        document.querySelector("#precip").innerHTML = `<i class="bi bi-water iconCurrent"></i> ${current.precipitation}mm`;
+        document.querySelector("#windSpeed").innerHTML = `<i class="bi bi-wind iconCurrent"></i> ${current.wind_speed_10m}km/h`;
+        document.querySelector("#windDirec").style.transform = `rotate(${current.wind_direction_10m}deg)`;
+    }
+
+    let nowIndex = hourly.time.findIndex(time => time.getTime() >= now.getTime());
+
+    for (let i = nowIndex - 1; i < (nowIndex + 24); i++) {
+        let forecast = document.createElement("div");
+        forecast.classList.add("col", "d-flex", "flex-column", "align-items-center");
+
+        let date = new Date(hourly.time[i]);
+        let timeLabel = (i === nowIndex - 1) ? "Maint." : date.getHours() + "h";
+        let windDir = hourly.wind_direction_10m[i];
+
+        forecast.innerHTML = `
         <div><strong>${timeLabel}</strong></div>
         <div>${hourly.temperature_2m[i]}°C</div>
         <div><i class="bi ${getIconByWeatherCode(hourly.weather_code[i])}"></i></div>
@@ -83,20 +102,24 @@ for (let i = nowIndex - 1; i < (nowIndex + 24); i++) {
         <div>${hourly.wind_speed_10m[i]}km/h</div>
         <div class="windDirec" style="transform: rotate(${windDir}deg);"></div>
     `;
-    document.querySelector("#hourlyForecast").appendChild(forecast);
-}
+        document.querySelector("#hourlyForecast").appendChild(forecast);
+    }
 
-for (let i = 0; i < daily.time.length; i++) {
-    const forecast = document.createElement("tr");
+    for (let i = 0; i < daily.time.length; i++) {
+        let forecast = document.createElement("tr");
 
-    const date = new Date(daily.time[i]);
-    const dayLabel = date.getDay() === now.getDay() ? "auj." : date.toLocaleDateString("fr-FR", { weekday: "long"});
+        let date = new Date(daily.time[i]);
+        let dayLabel = date.getDay() === now.getDay() ? "auj." : date.toLocaleDateString("fr-FR", { weekday: "long"});
 
-    forecast.innerHTML = `
+        forecast.innerHTML = `
         <td>${dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1)}</td>
         <td><i class="bi ${getIconByWeatherCode(daily.weather_code[i])}"</i></td>
         <td>${daily.temperature_2m_max[i]}°C</td>
         <td>${daily.temperature_2m_min[i]}°C</td>
     `;
-    document.querySelector("#dailyForecast").appendChild(forecast);
+        document.querySelector("#dailyForecast").appendChild(forecast);
+    }
 }
+
+cityInput.addEventListener("input", loadWeather);
+loadWeather(); // appel initial
