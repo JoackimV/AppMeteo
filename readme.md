@@ -20,13 +20,13 @@ Elle permet de rechercher une ville et d’afficher les conditions actuelles, le
 ## Fonctionnalités
 
 - Recherche de ville via un champ texte
+- Recherche de ville via map
+- Indication location de la ville sur une map
 - Affichage de la météo actuelle :
-  - Température
+  - Température (actuelle, max, min)
   - Précipitations
-  - Vitesse du vent
-  - Direction du vent
 - Prévisions météo heure par heure
-- Prévisions météo journalières (4 jours)
+- Prévisions météo journalières (13 jours)
 
 ---
 
@@ -36,6 +36,7 @@ app_meteo/
 ├─ index.html  
 ├─ package.json  
 ├─ public/
+   └─ geo-alt-fill.svg
 └─ src/  
    ├─ main.js  
    ├─ weatherData.js  

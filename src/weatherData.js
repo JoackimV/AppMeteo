@@ -12,10 +12,9 @@ export async function getWeatherData(city) {
         longitude: cityData.longitude,
         daily: ["weather_code", "temperature_2m_max", "temperature_2m_min"],
         hourly: ["temperature_2m", "weather_code", "wind_speed_10m", "wind_direction_10m", "precipitation"],
-        models: "meteofrance_seamless",
         current: ["temperature_2m", "precipitation", "weather_code", "wind_speed_10m", "wind_direction_10m", "apparent_temperature"],
         timezone: "auto",
-        forecast_days: 4,
+        forecast_days: 13,
     };
 
     const url = "https://api.open-meteo.com/v1/forecast";
@@ -56,6 +55,8 @@ export async function getWeatherData(city) {
             wind_speed_10m: currentValue(current, 3, true),
             wind_direction_10m: currentValue(current, 4, true),
             apparent_temperature: currentValue(current, 5, true),
+            latitude: latitude,
+            longitude: longitude,
         } : null,
 
         hourly: hourly ? (() => {
