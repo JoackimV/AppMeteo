@@ -36,7 +36,7 @@ app_meteo/
 ├─ index.html  
 ├─ package.json  
 ├─ public/
-    └─ geo-alt-fill.svg
+   └─ geo-alt-fill.svg
 └─ src/  
    ├─ main.js  
    ├─ weatherData.js  
