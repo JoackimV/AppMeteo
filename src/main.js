@@ -72,8 +72,7 @@ for (let i = nowIndex - 1; i < (nowIndex + 24); i++) {
     forecast.classList.add("col", "d-flex", "flex-column", "align-items-center");
 
     const date = new Date(hourly.time[i]);
-    const timeLabel = date.getHours() === now.getHours() ? "Maint." : date.getHours() + "h";
-
+    const timeLabel = (i === nowIndex - 1) ? "Maint." : date.getHours() + "h";
     const windDir = hourly.wind_direction_10m[i];
 
     forecast.innerHTML = `
