@@ -9,6 +9,7 @@ import "./cityLocation.js";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { compassSVG } from "./compass.js";
+import { getIsLoading } from "./weatherData.js";
 
 const appHTML = await fetch('../public/app.html').then(r => r.text());
 document.querySelector('#app').innerHTML = appHTML;
@@ -36,9 +37,23 @@ let cityInput = document.querySelector("#cityInput");
 
 async function loadWeather() {
     let city = cityInput.value.trim() === "" ? "Paris" : cityInput.value.trim();
-    let weatherData = await getWeatherData(city);
-    if (!weatherData) return;
-    renderWeather(weatherData);
+
+    let loader = document.querySelector("#loader");
+    let app = document.querySelector("#app");
+
+    // Lancer le chargement
+    getWeatherData(city).then(weatherData => {
+        // appelé quand c'est fini
+        loader.style.display = "none";
+        app.style.display = "block";
+        if (weatherData) renderWeather(weatherData);
+    });
+
+    // Pendant le chargement
+    if (getIsLoading()) {
+        loader.style.display = "inline-block";
+        app.style.display = "none";
+    }
 }
 
 function renderWeather(weatherData) {
@@ -72,9 +87,6 @@ function renderWeather(weatherData) {
 
         let date = new Date(hourly.time[i]);
         let timeLabel = (i === nowIndex - 1) ? "Maint." : date.getHours() + "h";
-
-        console.log(timeLabel);
-        console.log(hourly.temperature_2m[i]);
 
         forecast.innerHTML = `
         <div><strong>${timeLabel}</strong></div>
