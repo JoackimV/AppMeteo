@@ -14,7 +14,7 @@ export async function getWeatherData(city) {
         hourly: ["temperature_2m", "weather_code", "wind_speed_10m", "wind_direction_10m", "precipitation"],
         current: ["temperature_2m", "precipitation", "weather_code", "wind_speed_10m", "wind_direction_10m", "apparent_temperature"],
         timezone: "auto",
-        forecast_days: 13,
+        forecast_days: 14,
     };
 
     const url = "https://api.open-meteo.com/v1/forecast";
