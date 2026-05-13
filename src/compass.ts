@@ -1,5 +1,5 @@
 // src/compass.js
-export const compassSVG = `
+export const compassSVG: any = `
 <svg id="csvg" viewBox="0 0 225 225" width="220" height="225" xmlns="http://www.w3.org/2000/svg" style="max-width: 225px; display: block; margin-inline: auto;">
 
     <defs>
