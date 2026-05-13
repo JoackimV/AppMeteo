@@ -2,8 +2,11 @@ import { fetchWeatherApi } from "openmeteo";
 import { buildTimeArray, valuesArray, currentValue, zipToObjects } from "./helpers.js";
 import { getCityInfo } from "./cityLocation.js";
 
-let isLoading;
-export async function getWeatherData(city) {
+import type {WeatherData, WeatherEntry} from './types';
+
+let isLoading: boolean;
+
+export async function getWeatherData(city: string): Promise<WeatherData | null> {
     isLoading = true;
 
     const cityData = await getCityInfo(city);
@@ -36,9 +39,9 @@ export async function getWeatherData(city) {
 
         const latitude = response.latitude();
         const longitude = response.longitude();
-        const elevation = response.elevation();
-        const timezone = response.timezone();
-        const timezoneAbbreviation = response.timezoneAbbreviation();
+        //const elevation = response.elevation();
+        //const timezone = response.timezone();
+        //const timezoneAbbreviation = response.timezoneAbbreviation();
         const utcOffsetSeconds = response.utcOffsetSeconds();
 
         /*    console.log("==== DEBUG ====")
@@ -91,7 +94,7 @@ export async function getWeatherData(city) {
                     wind_direction_10m,
                     precipitation,
                     // optional convenient array of objects (24h can be sliced by caller)
-                    entries: zipToObjects(time, keys, arrays),
+                    entries: zipToObjects(time, keys, arrays) as WeatherEntry[] | null,
                 };
             })() : null,
 
@@ -109,12 +112,13 @@ export async function getWeatherData(city) {
                     weather_code,
                     temperature_2m_max,
                     temperature_2m_min,
-                    entries: zipToObjects(time, keys, arrays),
+                    entries: zipToObjects(time, keys, arrays) as WeatherEntry[] | null,
                 };
             })() : null,
         };
     } catch (error) {
-        console.error("API Call Failed:", error.message);
+        console.error("API Call Failed:", (error as Error).message);
+        return null
     } finally {
         isLoading = false;
     }

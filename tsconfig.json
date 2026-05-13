@@ -8,7 +8,8 @@
     "noUnusedParameters": true,
     "skipLibCheck": true,
     "lib": ["ES2020", "DOM"],
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "allowImportingTsExtensions": true
   },
   "include": ["src"]
 }

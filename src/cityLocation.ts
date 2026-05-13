@@ -1,6 +1,7 @@
-let isLoading;
+import type { CityInfo } from './types';
 
-export async function getCityInfo(city) {
+let isLoading: boolean;
+export async function getCityInfo(city: string): Promise<CityInfo | null> {
     isLoading = true;
     const url = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=fr&format=json`;
     try {
@@ -22,12 +23,13 @@ export async function getCityInfo(city) {
             country: result.country,
         }
     } catch (error) {
-        console.error("API Call Failed:", error.message);
+        console.error("API Call Failed:", (error as Error).message);
+        return null
     } finally {
         isLoading = false;
     }
 }
 
-export function getIsLoading() {
+export function getIsLoading(): boolean {
     return isLoading;
 }

@@ -42,13 +42,13 @@ app_meteo/
    ├─ compass.svg
    └─ geo-alt-fill.svg
 └─ src/  
-   ├─ main.js  
-   ├─ weatherData.js  
-   ├─ weatherIcon.js  
-   ├─ cityLocation.js  
-   ├─ helpers.js  
+   ├─ main.ts  
+   ├─ weatherData.ts  
+   ├─ weatherIcon.ts  
+   ├─ cityLocation.ts  
+   ├─ helpers.ts  
    ├─ style.css   
-   ├─ compass.js  
+   ├─ compass.ts  
    └─ assets/  
 	  └─ wind_unselected.svg
 
@@ -107,10 +107,10 @@ npm run preview
 
 ## Architecture rapide
 
-- `src/main.js` : point d’entrée de l’application, rendu HTML et logique d’affichage météo.  
-- `src/weatherData.js` : récupération et préparation des données météo.  
-- `src/weatherIcon.js` : mapping des codes météo vers les icônes Bootstrap.  
-- `src/cityLocation.js` : logique liée à la ville/localisation.  
+- `src/main.ts` : point d’entrée de l’application, rendu HTML et logique d’affichage météo.  
+- `src/weatherData.ts` : récupération et préparation des données météo.  
+- `src/weatherIcon.ts` : mapping des codes météo vers les icônes Bootstrap.  
+- `src/cityLocation.ts` : logique liée à la ville/localisation.  
 - `src/style.css` : styles personnalisés de l’interface.
 
 ---

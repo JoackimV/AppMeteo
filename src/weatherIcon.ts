@@ -1,4 +1,4 @@
-export const icon = {
+export const icon: Record<number, string> = {
     0: "bi-brightness-high",
     1: "bi-cloud-sun",
     2: "bi-cloud-sun",
@@ -36,6 +36,6 @@ export const icon = {
     99: "bi-cloud-hail",
 };
 
-export function getIconByWeatherCode(code) {
+export function getIconByWeatherCode(code: number): string {
     return icon[code] || "bi-question-circle";
 }
