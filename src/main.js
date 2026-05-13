@@ -33,6 +33,22 @@ var myIcon = L.icon({
 // Marqueur de la ville actuelle
 let marker = L.marker([48.8566, 2.3522], {icon: myIcon}).addTo(map);
 
+// Initialiser la carte une seule fois
+const map = L.map('map').setView([48.8566, 2.3522], 5); // Paris par défaut
+
+// Fond de carte (gratuit, sans clé API)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+}).addTo(map);
+
+var myIcon = L.icon({
+    iconUrl: 'geo-alt-fill.svg',
+    iconSize: [30, 60],
+    iconAnchor: [15, 45],
+    popupAnchor: [0, -20],
+});
+// Marqueur de la ville actuelle
+let marker = L.marker([48.8566, 2.3522], {icon: myIcon}).addTo(map);
+
 let cityInput = document.querySelector("#cityInput");
 
 async function loadWeather() {
