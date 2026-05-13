@@ -14,6 +14,7 @@ Elle permet de rechercher une ville et d’afficher les conditions actuelles, le
 - **CSS3**
 - **Bootstrap**
 - **Bootstrap Icons**
+- **TypeScript**
 
 ---
 
@@ -38,7 +39,6 @@ app_meteo/
 ├─ index.html  
 ├─ package.json  
 ├─ public/
-   ├─ app.html
    ├─ compass.svg
    └─ geo-alt-fill.svg
 └─ src/  
