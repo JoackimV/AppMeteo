@@ -49,21 +49,21 @@ let cityInput = document.querySelector("#cityInput");
 async function loadWeather() {
     let city = cityInput.value.trim() === "" ? "Paris" : cityInput.value.trim();
 
-    let loader = document.querySelector("#loader");
-    let app = document.querySelector("#app");
+    let loader = document.querySelector("#loader-container");
+    let meteo = document.querySelector("#meteo");
 
     // Lancer le chargement
     getWeatherData(city).then(weatherData => {
         // appelé quand c'est fini
         loader.style.display = "none";
-        app.style.display = "block";
+        meteo.style.display = "flex";
         if (weatherData) renderWeather(weatherData);
     });
 
     // Pendant le chargement
     if (getIsLoading()) {
-        loader.style.display = "inline-block";
-        app.style.display = "none";
+        loader.style.display = "flex";
+        meteo.style.display = "none";
     }
 }
 
