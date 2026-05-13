@@ -8,56 +8,30 @@ import { getIconByWeatherCode } from "./weatherIcon";
 import "./cityLocation.js";
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { compassSVG } from "./compass.js";
+import { getIsLoading } from "./weatherData.js";
 
-document.querySelector('#app').innerHTML = `
-<main class="container-fluid app-layout">
-    <header class="d-flex flex-column align-items-center justify-content-center">
-        <h1 id="title">App Meteo</h1>
-        <div class="input-group w-25" id="searchCity">
-            <input type="text" class="form-control" placeholder="Entrez une ville" aria-label="City name" id="cityInput">
-            <i class="bi bi-search input-group-text"></i>
-        </div>
-    </header>
-    <!-- Prévisions par jour -->
-    <div class="card row-start-2 row-span-2">
-        <div class="card-header">
-            <h5 class="mb-0">Prévisions sur 13 jours</h5>
-        </div>
-        <div class="card-body">
-            <table class="table mb-0 h-100">
-                <tbody id="dailyForecast"></tbody>
-            </table>
-        </div>
-    </div>
-    <!-- Info ville -->
-    <div class="card row-start-2">
-        <div class="card-body d-flex flex-column justify-content-center align-items-center">
-            <h1 class="mb-0 fs-2" id="cityName"></h1>
-            <h3 class="fw-normal fs-4 mb-0" id="countryName"></h3>
-            <div class="row fs-1" id="temp"></div>
-            <div class="row gap-2">
-                <div class="w-fit-content p-0" id="tempMax"></div>
-                <div class="w-fit-content p-0" id="tempMin"></div>
-            </div>
-            <div class="row" id="precip"></div>
-        </div>
-    </div>
-    <div class="card row-start-2 row-span-2">
-        <div class="card-body p-0">
-            <div id="map" style="width: 100%; height: 100%;"></div>
-        </div>
-    </div>
-    <!-- Prévisions par heure -->
-    <div class="card row-start-3 col-start-2 h-fit-content">
-        <div class="card-header">
-            <h5 class="mb-0">Prévisions heure par heure</h5>
-        </div>
-        <div class="card-body overflow-x-auto overflow-y-hidden w-100">
-            <div class="row flex-nowrap fit-content" id="hourlyForecast"></div>
-        </div>
-    </div>
-</main>
-`
+const appHTML = await fetch('../public/app.html').then(r => r.text());
+document.querySelector('#app').innerHTML = appHTML;
+
+document.querySelector('#compass-container').innerHTML = compassSVG;
+
+// Initialiser la carte une seule fois
+const map = L.map('map', { zoomControl: false }).setView([48.8566, 2.3522], 5); // Paris par défaut
+
+L.control.zoom({ position: 'topright' }).addTo(map);
+
+// Fond de carte (gratuit, sans clé API)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
+
+var myIcon = L.icon({
+    iconUrl: 'geo-alt-fill.svg',
+    iconSize: [30, 60],
+    iconAnchor: [15, 45],
+    popupAnchor: [0, -20],
+});
+// Marqueur de la ville actuelle
+let marker = L.marker([48.8566, 2.3522], {icon: myIcon}).addTo(map);
 
 // Initialiser la carte une seule fois
 const map = L.map('map').setView([48.8566, 2.3522], 5); // Paris par défaut
@@ -79,9 +53,23 @@ let cityInput = document.querySelector("#cityInput");
 
 async function loadWeather() {
     let city = cityInput.value.trim() === "" ? "Paris" : cityInput.value.trim();
-    let weatherData = await getWeatherData(city);
-    if (!weatherData) return;
-    renderWeather(weatherData);
+
+    let loader = document.querySelector("#loader");
+    let app = document.querySelector("#app");
+
+    // Lancer le chargement
+    getWeatherData(city).then(weatherData => {
+        // appelé quand c'est fini
+        loader.style.display = "none";
+        app.style.display = "block";
+        if (weatherData) renderWeather(weatherData);
+    });
+
+    // Pendant le chargement
+    if (getIsLoading()) {
+        loader.style.display = "inline-block";
+        app.style.display = "none";
+    }
 }
 
 function renderWeather(weatherData) {
@@ -102,25 +90,24 @@ function renderWeather(weatherData) {
         document.querySelector("#precip").innerHTML = `<i class="bi bi-water iconCurrent p-0 me-2"></i> ${current.precipitation}mm`;
         //document.querySelector("#windSpeed").innerHTML = `<i class="bi bi-wind iconCurrent"></i> ${current.wind_speed_10m}km/h`;
         //document.querySelector("#windDirec").style.transform = `rotate(${current.wind_direction_10m}deg)`;
+
+        document.querySelector("#needle").setAttribute("transform", `rotate(${current.wind_direction_10m}, 110, 110)`);
+        document.querySelector("#spd").textContent = current.wind_speed_10m;
     }
 
     let nowIndex = hourly.time.findIndex(time => time.getTime() >= now.getTime());
 
     for (let i = nowIndex - 1; i < (nowIndex + 24); i++) {
         let forecast = document.createElement("div");
-        forecast.classList.add("col", "d-flex", "flex-column", "align-items-center");
+        forecast.classList.add("col", "d-flex", "flex-column", "align-items-center", "gap-2");
 
         let date = new Date(hourly.time[i]);
         let timeLabel = (i === nowIndex - 1) ? "Maint." : date.getHours() + "h";
-        let windDir = hourly.wind_direction_10m[i];
 
         forecast.innerHTML = `
         <div><strong>${timeLabel}</strong></div>
         <div>${hourly.temperature_2m[i]}°C</div>
         <div><i class="bi ${getIconByWeatherCode(hourly.weather_code[i])}"></i></div>
-        <div>${hourly.weather_code[i]}%</div>
-        <div>${hourly.wind_speed_10m[i]}km/h</div>
-        <div class="windDirec" style="transform: rotate(${windDir}deg);"></div>
     `;
         document.querySelector("#hourlyForecast").appendChild(forecast);
     }

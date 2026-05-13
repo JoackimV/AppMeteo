@@ -25,8 +25,10 @@ Elle permet de rechercher une ville et d’afficher les conditions actuelles, le
 - Affichage de la météo actuelle :
   - Température (actuelle, max, min)
   - Précipitations
+- Direction et vitesse du vent 
 - Prévisions météo heure par heure
-- Prévisions météo journalières (13 jours)
+- Prévisions météo journalières (14 jours)
+- Layout responsive
 
 ---
 
@@ -36,6 +38,8 @@ app_meteo/
 ├─ index.html  
 ├─ package.json  
 ├─ public/
+   ├─ app.html
+   ├─ compass.svg
    └─ geo-alt-fill.svg
 └─ src/  
    ├─ main.js  
@@ -43,7 +47,8 @@ app_meteo/
    ├─ weatherIcon.js  
    ├─ cityLocation.js  
    ├─ helpers.js  
-   ├─ style.css  
+   ├─ style.css   
+   ├─ compass.js  
    └─ assets/  
 	  └─ wind_unselected.svg
 
@@ -107,13 +112,6 @@ npm run preview
 - `src/weatherIcon.js` : mapping des codes météo vers les icônes Bootstrap.  
 - `src/cityLocation.js` : logique liée à la ville/localisation.  
 - `src/style.css` : styles personnalisés de l’interface.
-
----
-
-## Améliorations possibles
-
-- Ajouter une meilleure gestion des erreurs (ville introuvable, échec API, hors-ligne).  
-- Ajouter un loader pendant le chargement des données.  
 
 ---
 
